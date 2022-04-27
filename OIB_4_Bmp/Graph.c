@@ -5,13 +5,15 @@
 #define BYTES_BMP_SERVICE 54
 #define BITS_IN_BYTE 8
 #define MAX_BYTE_VALUE 255
+#define MAX_DIGIT_INPUT 3
+#define MAX_NUMBER_INPUT 23
 
 #include <stdio.h>
 #include <windows.h>
 #include <string.h>
 #include <malloc.h>
 
-int security(char input[3]) // isdigit()
+int security(char input[MAX_DIGIT_INPUT])
 {
 	int flag = 0;
 	if (input[0] == '\n') return 1;
@@ -27,14 +29,25 @@ int security(char input[3]) // isdigit()
 	return flag;
 }
 
+int check_degree(int number)
+{
+	int flag = 0;
+	int degrees[4] = { 1, 2, 4, 8 };
+	for (int i = 0; i < 4; i++)
+	{
+		if (number == degrees[i]) flag = 1;
+	}
+	return flag;
+}
+
 void input_degree(int* degree)
 {
 	printf("\nEnter the encoding degree value (1, 2, 4, 8): ");
-	char input[3];
-	fgets(input, 3, stdin);
+	char input[MAX_DIGIT_INPUT];
+	fgets(input, MAX_DIGIT_INPUT, stdin);
 	input[strcspn(input, "\n")] = 0;
 	fseek(stdin, 0, SEEK_END);
-	if (security(input) == 0 && (atoi(input) == 1 || atoi(input) == 2 || atoi(input) == 4 || atoi(input) == 8)) *degree = atoi(input);
+	if (security(input) == 0 && check_degree(atoi(input)) == 1) *degree = atoi(input);
 	else
 	{
 		printf("You entered the encoding degree incorrectly! Try again.\n");
@@ -55,6 +68,14 @@ void masks(int degree, unsigned char* text_mask, unsigned char* bmp_mask)
 	*bmp_mask <<= degree;
 }
 
+int get_size(FILE* pointer)
+{
+	fseek(pointer, 0, SEEK_END);
+	int size = ftell(pointer);
+	rewind(pointer);
+	return size;
+}
+
 void coding()
 {
 	FILE* begin_bmp = fopen("paint.bmp", "rb");
@@ -67,13 +88,9 @@ void coding()
 		exit(DEFAULT_ERROR);
 	}
 	// Getting the size of the encoded message
-	fseek(text, 0, SEEK_END);
-	int size_text = ftell(text);
-	rewind(text);
+	int size_text = get_size(text);
 	// Getting the size of the original BMP file
-	fseek(begin_bmp, 0, SEEK_END);
-	int size_bmp = ftell(begin_bmp);
-	rewind(begin_bmp);
+	int size_bmp = get_size(begin_bmp);
 	// Entering the encoding degree
 	int degree = 0;
 	input_degree(&degree);
@@ -160,8 +177,8 @@ void coding()
 void input_count(int* count)
 {
 	printf("\nEnter the number of bytes of the secret message to be decoded: ");
-	char input[23];
-	fgets(input, 23, stdin);
+	char input[MAX_NUMBER_INPUT];
+	fgets(input, MAX_NUMBER_INPUT, stdin);
 	input[strcspn(input, "\n")] = 0;
 	fseek(stdin, 0, SEEK_END);
 	if (security(input) == 0) *count = atoi(input);
@@ -186,9 +203,7 @@ void decoding()
 	int read_count = 0;
 	input_count(&read_count);
 	// Getting the size of the original BMP file
-	fseek(coded_bmp, 0, SEEK_END);
-	int size_bmp = ftell(coded_bmp);
-	rewind(coded_bmp);
+	int size_bmp = get_size(coded_bmp);
 	// Entering the encoding degree
 	int degree = 0;
 	input_degree(&degree);
@@ -246,14 +261,12 @@ int menu()
 		"3. Exiting the program\n"
 		"\nSelect the number of the program's operating mode: ");
 	int value = -1;
-	char input[3];
-	fgets(input, 3, stdin);
+	char input[MAX_DIGIT_INPUT];
+	fgets(input, MAX_DIGIT_INPUT, stdin);
 	input[strcspn(input, "\n")] = 0;
 	fseek(stdin, 0, SEEK_END);
-	if (security(input) == 0 && atoi(input) < 4)
-	{
-		return atoi(input);
-	}
+	value = atoi(input);
+	if (security(input) == 0 && value < 4) return value;
 	else return -1;
 }
 
