@@ -80,7 +80,7 @@ void coding()
 {
 	FILE* begin_bmp = fopen("paint.bmp", "rb");
 	FILE* coded_bmp = fopen("coded.bmp", "wb");
-	FILE* text = fopen("file.exe", "rb");
+	FILE* text = fopen("text.txt", "rb");
 	if (begin_bmp == NULL || coded_bmp == NULL || text == NULL)
 	{
 		system("cls");
@@ -192,7 +192,7 @@ void input_count(int* count)
 void decoding()
 {
 	FILE* coded_bmp = fopen("coded.bmp", "rb");
-	FILE* end_text = fopen("decoded.exe", "wb");
+	FILE* end_text = fopen("decoded.txt", "wb");
 	if (coded_bmp == NULL || end_text == NULL)
 	{
 		system("cls");
