@@ -114,8 +114,8 @@ void coding()
 			exit(DEFAULT_ERROR);
 		}
 		fwrite(buf_first, 1, BYTES_BMP_SERVICE, coded_bmp);
+		free(buf_first);
 	}
-	free(buf_first);
 	// Creating bit masks
 	unsigned char text_mask = 0;
 	unsigned char bmp_mask = 0;
@@ -147,10 +147,10 @@ void coding()
 			buffer[0] = 0;
 			counter++;
 		}
+		free(buf_img);
+		free(buf_txt);
+		free(buffer);
 	}
-	free(buf_img);
-	free(buf_txt);
-	free(buffer);
 	// Writing the remaining bytes to the encoded BMP file
 	int count = size_bmp - ftell(begin_bmp);
 	unsigned char* buf_last = malloc(sizeof(unsigned char) * count);
@@ -164,8 +164,8 @@ void coding()
 			exit(DEFAULT_ERROR);
 		}
 		fwrite(buf_last, 1, count, coded_bmp);
+		free(buf_last);
 	}
-	free(buf_last);
 	fclose(text);
 	fclose(begin_bmp);
 	fclose(coded_bmp);
@@ -243,6 +243,8 @@ void decoding()
 			read++;
 			buffer[0] = 0;
 		}
+		free(buf_img);
+		free(buffer);
 	}
 	fclose(coded_bmp);
 	fclose(end_text);
